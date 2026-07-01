@@ -1,4 +1,5 @@
 import {createClient} from 'redis';
+import { downloadS3 } from './aws.js';
 
 const subscriber= createClient();
 subscriber.connect();
@@ -10,6 +11,7 @@ const main= async ()=>{
             10
         );
         console.log(response);
+            await downloadS3(`/Output/${response?.element}`);
+        }
     }
-}
 main();
