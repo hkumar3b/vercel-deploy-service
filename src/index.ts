@@ -6,12 +6,14 @@ subscriber.connect();
 
 const main= async ()=>{
     while(true){
-        const response= await subscriber.brPop(
+        const response = await subscriber.brPop(
             'build-queue',
             10
         );
-        console.log(response);
-            await downloadS3(`/Output/${response?.element}`);
+        if (response) {
+            console.log(response);
+            await downloadS3(`/Output/${response.element}`);
         }
     }
+};
 main();
