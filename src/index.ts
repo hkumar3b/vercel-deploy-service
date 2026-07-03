@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { downloadS3 } from "./aws.js";
+import { downloadS3, copyFinalDist } from "./aws.js";
 import { buildProject } from "./utlis.js";
 
 const subscriber = createClient();
@@ -12,6 +12,7 @@ const main = async () => {
       console.log(response);
       await downloadS3(`Output/${response.element}`);
       await buildProject(response.element);
+      await copyFinalDist(response.element);
     }
   }
 };
