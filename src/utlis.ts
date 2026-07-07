@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import path from "path";
 
-export const buildProject = (id: string) => {
+export const buildProject = (id: string): Promise<boolean> => {
   return new Promise((resolve) => {
     const child = exec(
       `cd ${path.join(__dirname, `Output/${id}`)}&& npm install && (npm run build || npx tsc)`,
@@ -14,7 +14,7 @@ export const buildProject = (id: string) => {
       console.log("stderr: " + data);
     });
     child.on("close", function (code) {
-      resolve("");
+      resolve(code === 0);
     });
   });
 };

@@ -13,11 +13,20 @@ const main = async () => {
     const response = await subscriber.brPop("build-queue", 10);
     if (response) {
       console.log(response);
-      await downloadS3(`Output/${response.element}`);
-      await buildProject(response.element);
-      await copyFinalDist(response.element);
-
-      publisher.hSet("staus", response.element, "deployed");
+      try {
+        await downloadS3(`Output/${response.element}`);
+        const success = await buildProject(response.element);
+        if (success) {
+          await copyFinalDist(response.element);
+          await publisher.hSet("status", response.element, "deployed");
+        } else {
+          console.error(`Build failed for project: ${response.element}`);
+          await publisher.hSet("status", response.element, "failed");
+        }
+      } catch (error) {
+        console.error(`Error deploying project: ${response.element}`, error);
+        await publisher.hSet("status", response.element, "failed");
+      }
     }
   }
 };
